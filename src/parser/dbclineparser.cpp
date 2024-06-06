@@ -539,7 +539,7 @@ bool DbcLineParser::ParseAttributeLine(AttributeDescriptor_t* attr, const std::s
         attr->Value = atoi(items[5].c_str());
         ret = true;
       }
-      else if (items.size() > 4)
+      else if (items.size() > 4 && items[2] == "BO_")
       {
         attr->Type = AttributeType::Undefined;
         attr->MsgId = clear_msgid(static_cast<uint32_t>(atoll(items[3].c_str())));
