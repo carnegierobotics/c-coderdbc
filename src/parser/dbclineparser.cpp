@@ -520,7 +520,6 @@ bool DbcLineParser::ParseAttributeLine(AttributeDescriptor_t* attr, const std::s
     // check if the current line is last
     if (attribline.size() > 0 && line.back() == ';')
     {
-      attr->Type = AttributeType::Undefined;
       // raw line is ready
       auto items = resplit(attribline, kRegAttrMain, -1);
 
@@ -538,6 +537,14 @@ bool DbcLineParser::ParseAttributeLine(AttributeDescriptor_t* attr, const std::s
         attr->SignalName = items[4];
         // read value of start value for the current signal
         attr->Value = atoi(items[5].c_str());
+        ret = true;
+      }
+      else if (items.size() > 4)
+      {
+        attr->Type = AttributeType::Undefined;
+        attr->MsgId = clear_msgid(static_cast<uint32_t>(atoll(items[3].c_str())));
+        attr->Name = items[1];
+        attr->Value = atoi(items[4].c_str());
         ret = true;
       }
 

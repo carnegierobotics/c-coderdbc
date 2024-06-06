@@ -113,6 +113,8 @@ typedef struct
   // Frame cycle time im ms
   uint32_t Cycle;
 
+  std::vector<std::pair<std::string, int32_t>> UndefinedAttributes;
+
   // Name of transmitter ECU
   std::vector<std::string> TranS;
 

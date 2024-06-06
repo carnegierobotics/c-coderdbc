@@ -288,6 +288,9 @@ void DbcScanner::ParseOtherInfo(istream& readstrm)
 
           result->StartValue = attr.Value;
         }
+        else {
+          msg->UndefinedAttributes.push_back({attr.Name, attr.Value});
+        }
       }
     }
   }

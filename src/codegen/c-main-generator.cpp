@@ -168,11 +168,19 @@ void CiMainGenerator::Gen_MainHeader()
     fwriter.Append("#define %s_IDE (%uU)", m.Name.c_str(), m.IsExt);
     fwriter.Append("#define %s_DLC (%uU)", m.Name.c_str(), m.DLC);
     fwriter.Append("#define %s_CANID (%#xU)", m.Name.c_str(), m.MsgID);
-
+    
     if (m.Cycle > 0)
     {
       fwriter.Append("#define %s_CYC (%dU)", m.Name.c_str(), m.Cycle);
     }
+
+    for (size_t attr_num = 0u; attr_num < m.UndefinedAttributes.size(); attr_num++)
+    {
+      const auto &attr = m.UndefinedAttributes[attr_num];
+
+      fwriter.Append("#define %s_%s (%dU)", m.Name.c_str(), attr.first.c_str(), attr.second);
+    }
+
 
     size_t max_sig_name_len = 27;
 

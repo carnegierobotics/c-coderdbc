@@ -25,6 +25,9 @@ struct AttributeDescriptor_t
   /// @brief Attribute type
   AttributeType Type;
 
+  /// @brief Attribute name
+  std::string Name;
+
   /// @brief Signal name (empty if not a StartValue attribute)
   std::string SignalName;
 
