@@ -531,6 +531,14 @@ bool DbcLineParser::ParseAttributeLine(AttributeDescriptor_t* attr, const std::s
         // read value of ms of cycle time for the current message
         attr->Value = atoi(items[4].c_str());
         ret = true;
+      } else if (items.size() > 5 && items[1] == "GenSigStartValue" && items[2] == "SG_")
+      {
+        attr->Type = AttributeType::StartValue;
+        attr->MsgId = clear_msgid(static_cast<uint32_t>(atoll(items[3].c_str())));
+        attr->SignalName = items[4];
+        // read value of start value for the current signal
+        attr->Value = atoi(items[5].c_str());
+        ret = true;
       }
 
       attribline.clear();

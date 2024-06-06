@@ -81,6 +81,8 @@ typedef struct
 
   double MaxValue;
 
+  double StartValue = 0.0;
+
   std::vector<std::string> RecS;
 
   ValTable_t ValDefs;

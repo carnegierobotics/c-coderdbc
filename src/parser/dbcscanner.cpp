@@ -2,6 +2,7 @@
 #include <cstring>
 #include <algorithm>
 #include <math.h>
+#include <regex>
 #include "../helpers/formatter.h"
 
 MessageDescriptor_t* find_message(vector<MessageDescriptor_t*> msgs, uint32_t ID)
@@ -276,6 +277,16 @@ void DbcScanner::ParseOtherInfo(istream& readstrm)
         if (attr.Type == AttributeType::CycleTime)
         {
           msg->Cycle = attr.Value;
+        }
+        else if (attr.Type == AttributeType::StartValue)
+        {
+          auto result = std::find_if(msg->Signals.begin(), msg->Signals.end(), [attr](const auto &s) { return std::regex_match(s.Name, std::basic_regex(attr.SignalName + "(_ro)?")); });
+          if (result == msg->Signals.end())
+          {
+            // ???
+          }
+
+          result->StartValue = attr.Value;
         }
       }
     }

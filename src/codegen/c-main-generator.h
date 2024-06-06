@@ -24,6 +24,7 @@ class CiMainGenerator {
 
   void WriteSigStructField(const SignalDescriptor_t& sig, bool bitfield, size_t pad);
 
+  void WriteInitBody(const CiExpr_t* sgs);
   void WriteUnpackBody(const CiExpr_t* sgs);
   void WritePackStructBody(const CiExpr_t* sgs);
   void WritePackArrayBody(const CiExpr_t* sgs);

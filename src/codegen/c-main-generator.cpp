@@ -311,6 +311,9 @@ void CiMainGenerator::Gen_MainHeader()
       continue;
     }
 
+    fwriter.Append("uint32_t Init_%s_%s(%s_t* _m);", 
+      m.Name.c_str(), fdesc->gen.DrvName_orig.c_str(), m.Name.c_str());
+
     fwriter.Append("uint32_t Unpack_%s_%s(%s_t* _m, const uint8_t* _d, uint8_t dlc_);",
       m.Name.c_str(), fdesc->gen.DrvName_orig.c_str(), m.Name.c_str());
 
@@ -400,6 +403,14 @@ void CiMainGenerator::Gen_MainSource()
       // do nothing, no pack and unpack functions for empty frames
       continue;
     }
+
+    fwriter.Append("uint32_t Init_%s_%s(%s_t* _m)\n{", 
+      m.Name.c_str(), fdesc->gen.DrvName_orig.c_str(), m.Name.c_str());
+
+    WriteInitBody(sigprt.sigs_expr[num]);
+
+    fwriter.Append("}");
+    fwriter.Append();
 
     // first function
     fwriter.Append("uint32_t Unpack_%s_%s(%s_t* _m, const uint8_t* _d, uint8_t dlc_)\n{",
@@ -684,6 +695,58 @@ void CiMainGenerator::WriteSigStructField(const SignalDescriptor_t& sig, bool bi
     fwriter.Append("#endif // %s", fdesc->gen.usesigfloat_def.c_str());
     fwriter.Append();
   }
+}
+
+void CiMainGenerator::WriteInitBody(const CiExpr_t* sgs) {
+  for (size_t num = 0; num < sgs->to_signals.size(); num++)
+  {
+    auto expr = sgs->to_signals[num];
+    
+    // for code shortening
+    const char* sname = sgs->msg.Signals[num].Name.c_str();
+
+    if (sgs->msg.Signals[num].Signed)
+    {
+      fwriter.Append("  _m->%s = (%s) %s(( %s ), %d);",
+        sname, PrintType((int)sgs->msg.Signals[num].TypeRo).c_str(), ext_sig_func_name, expr.c_str(), (int32_t)sgs->msg.Signals[num].StartValue);
+    }
+    else
+    {
+      fwriter.Append("  _m->%s = (%s) (%d);",
+        sname, PrintType((int)sgs->msg.Signals[num].TypeRo).c_str(), (int32_t)sgs->msg.Signals[num].StartValue);
+    }
+
+    // print sigfloat conversion
+    if (!sgs->msg.Signals[num].IsSimpleSig)
+    {
+      fwriter.Append("#ifdef %s", fdesc->gen.usesigfloat_def.c_str());
+
+      if (sgs->msg.Signals[num].IsDoubleSig)
+      {
+        // for double signals (sigfloat_t) type cast
+        fwriter.Append("  _m->%s = (sigfloat_t)(%s_%s_fromS(_m->%s));",
+          sgs->msg.Signals[num].NameFloat.c_str(), fdesc->gen.DRVNAME.c_str(), sname, sname);
+      }
+      else
+      {
+        fwriter.Append("  _m->%s = (%s) %s_%s_fromS(_m->%s);",
+          sgs->msg.Signals[num].NameFloat.c_str(),
+          PrintType((int)sgs->msg.Signals[num].TypePhys).c_str(),
+          fdesc->gen.DRVNAME.c_str(), sname, sname);
+      }
+
+      fwriter.Append("#endif // %s", fdesc->gen.usesigfloat_def.c_str());
+      fwriter.Append();
+    }
+
+    else if (num + 1 == sgs->to_signals.size())
+    {
+      // last signal without phys part, put \n manually
+      fwriter.Append("");
+    }
+  }
+
+  fwriter.Append("  return %s_CANID;", sgs->msg.Name.c_str());
 }
 
 void CiMainGenerator::WriteUnpackBody(const CiExpr_t* sgs)

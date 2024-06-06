@@ -4,11 +4,14 @@
 #include <vector>
 #include <string>
 
-/// @brief Message attributes
+/// @brief Message/Signal attributes
 enum class AttributeType
 {
   /// @brief Message cycle time attribute
   CycleTime,
+
+  /// @brief Signal start value attribute
+  StartValue,
 
   /// @brief Undefined attribute
   Undefined
@@ -22,6 +25,10 @@ struct AttributeDescriptor_t
   /// @brief Attribute type
   AttributeType Type;
 
+  /// @brief Signal name (empty if not a StartValue attribute)
+  std::string SignalName;
+
   /// @brief Attribute value
   int32_t Value;
 };
+
