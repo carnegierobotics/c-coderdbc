@@ -23,6 +23,7 @@ add_executable(coderdbc
     ${CMAKE_CURRENT_SOURCE_DIR}/maincli.cpp
 )
 
+install(TARGETS coderdbc)
 
 include(FetchContent)
 FetchContent_Declare(
