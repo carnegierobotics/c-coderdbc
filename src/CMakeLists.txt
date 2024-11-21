@@ -25,47 +25,50 @@ add_executable(coderdbc
 
 install(TARGETS coderdbc)
 
-include(FetchContent)
-FetchContent_Declare(
-  googletest
-  GIT_REPOSITORY https://github.com/google/googletest.git
-  GIT_TAG release-1.12.1
-)
-# For Windows: Prevent overriding the parent project's compiler/linker settings
-set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-FetchContent_MakeAvailable(googletest)
+if (BUILD_TESTING)
+    include(FetchContent)
+    FetchContent_Declare(
+      googletest
+      GIT_REPOSITORY https://github.com/google/googletest.git
+      GIT_TAG release-1.12.1
+    )
 
-enable_testing()
+    # For Windows: Prevent overriding the parent project's compiler/linker settings
+    set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+    FetchContent_MakeAvailable(googletest)
 
-add_executable(
-  cctest
-  ${CMAKE_CURRENT_SOURCE_DIR}/helpers/formatter.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/options-parser.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/parser/dbclineparser.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/tests/args-test.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/tests/bitext-test.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/tests/dbcline-test.cpp
-)
+    enable_testing()
 
-target_link_libraries(
-  cctest
-  GTest::gtest_main
-)
+    add_executable(
+      cctest
+      ${CMAKE_CURRENT_SOURCE_DIR}/helpers/formatter.cpp
+      ${CMAKE_CURRENT_SOURCE_DIR}/options-parser.cpp
+      ${CMAKE_CURRENT_SOURCE_DIR}/parser/dbclineparser.cpp
+      ${CMAKE_CURRENT_SOURCE_DIR}/tests/args-test.cpp
+      ${CMAKE_CURRENT_SOURCE_DIR}/tests/bitext-test.cpp
+      ${CMAKE_CURRENT_SOURCE_DIR}/tests/dbcline-test.cpp
+    )
 
-include(GoogleTest)
-gtest_discover_tests(cctest)
+    target_link_libraries(
+      cctest
+      GTest::gtest_main
+    )
+
+    include(GoogleTest)
+    gtest_discover_tests(cctest)
 
 
-add_library(
-  dummy OBJECT 
-  ${CMAKE_CURRENT_SOURCE_DIR}/../test/gencode/usr/testdb-fmon.c
-  ${CMAKE_CURRENT_SOURCE_DIR}/../test/gencode/lib/testdb.c
-  ${CMAKE_CURRENT_SOURCE_DIR}/../test/gencode/butl/bms_testdb-binutil.c
-)
+    add_library(
+      dummy OBJECT
+      ${CMAKE_CURRENT_SOURCE_DIR}/../test/gencode/usr/testdb-fmon.c
+      ${CMAKE_CURRENT_SOURCE_DIR}/../test/gencode/lib/testdb.c
+      ${CMAKE_CURRENT_SOURCE_DIR}/../test/gencode/butl/bms_testdb-binutil.c
+    )
 
-target_include_directories(
-  dummy PRIVATE 
-  ${CMAKE_CURRENT_SOURCE_DIR}/../test/gencode/conf
-  ${CMAKE_CURRENT_SOURCE_DIR}/../test/gencode/lib
-  ${CMAKE_CURRENT_SOURCE_DIR}/../test/gencode/inc
-)
+    target_include_directories(
+      dummy PRIVATE
+      ${CMAKE_CURRENT_SOURCE_DIR}/../test/gencode/conf
+      ${CMAKE_CURRENT_SOURCE_DIR}/../test/gencode/lib
+      ${CMAKE_CURRENT_SOURCE_DIR}/../test/gencode/inc
+    )
+endif
