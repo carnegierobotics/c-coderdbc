@@ -71,4 +71,4 @@ if (BUILD_TESTING)
       ${CMAKE_CURRENT_SOURCE_DIR}/../test/gencode/lib
       ${CMAKE_CURRENT_SOURCE_DIR}/../test/gencode/inc
     )
-endif
+endif()
