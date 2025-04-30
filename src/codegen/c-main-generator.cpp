@@ -718,6 +718,11 @@ void CiMainGenerator::WriteInitBody(const CiExpr_t* sgs) {
       fwriter.Append("  _m->%s = (%s) %s(( %s ), %d);",
         sname, PrintType((int)sgs->msg.Signals[num].TypeRo).c_str(), ext_sig_func_name, expr.c_str(), (int32_t)sgs->msg.Signals[num].StartValue);
     }
+    else if (!sgs->msg.Signals[num].IsSimpleSig)
+    {
+      fwriter.Append("  _m->%s = (%s) (%s_%s_toS(%d));",
+        sname, PrintType((int)sgs->msg.Signals[num].TypeRo).c_str(), fdesc->gen.DRVNAME.c_str(), sname, (int32_t)sgs->msg.Signals[num].StartValue);
+    }
     else
     {
       fwriter.Append("  _m->%s = (%s) (%d);",
@@ -732,15 +737,15 @@ void CiMainGenerator::WriteInitBody(const CiExpr_t* sgs) {
       if (sgs->msg.Signals[num].IsDoubleSig)
       {
         // for double signals (sigfloat_t) type cast
-        fwriter.Append("  _m->%s = (sigfloat_t)(%s_%s_fromS(_m->%s));",
-          sgs->msg.Signals[num].NameFloat.c_str(), fdesc->gen.DRVNAME.c_str(), sname, sname);
+        fwriter.Append("  _m->%s = (sigfloat_t)(%d);",
+          sgs->msg.Signals[num].NameFloat.c_str(), (int32_t)sgs->msg.Signals[num].StartValue);
       }
       else
       {
-        fwriter.Append("  _m->%s = (%s) %s_%s_fromS(_m->%s);",
+        fwriter.Append("  _m->%s = (%s) (%d);",
           sgs->msg.Signals[num].NameFloat.c_str(),
           PrintType((int)sgs->msg.Signals[num].TypePhys).c_str(),
-          fdesc->gen.DRVNAME.c_str(), sname, sname);
+          (int32_t)sgs->msg.Signals[num].StartValue);
       }
 
       fwriter.Append("#endif // %s", fdesc->gen.usesigfloat_def.c_str());
