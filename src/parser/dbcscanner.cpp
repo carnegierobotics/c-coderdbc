@@ -111,8 +111,37 @@ void DbcScanner::ParseMessageInfo(istream& readstrm)
         // set non empty flag to true once signal has been found and ready to be added into message
         pMsg->frameNotEmpty = true;
 
-        // put successfully parsed  signal to the message signals
-        pMsg->Signals.push_back(sig);
+        if (sig.TypeRo == SigType::u64)
+        {
+          SignalDescriptor_t sig_hi = sig;
+          sig_hi.Name += "_hi";
+          sig_hi.TypeRo = SigType::u32;
+
+          SignalDescriptor_t sig_lo = sig;
+          sig_lo.Name += "_lo";
+          sig_lo.TypeRo = SigType::u32;
+          sig_lo.IsDoubleSig = false;
+          sig_lo.IsSimpleSig = true;
+
+          if (sig.Order == BitLayout::kIntel)
+          {
+            sig_lo.LengthBit = 32u;
+            sig_hi.StartBit = sig.StartBit + 32u;
+            sig_hi.LengthBit = sig.LengthBit - 32u;
+          }
+          else {
+            sig_hi.LengthBit = 32u;
+            sig_lo.StartBit = sig.StartBit + 32u;
+            sig_lo.LengthBit = sig.LengthBit - 32u;
+          }
+
+          pMsg->Signals.push_back(sig_lo);
+          pMsg->Signals.push_back(sig_hi);
+        }
+        else {
+          // put successfully parsed  signal to the message signals
+          pMsg->Signals.push_back(sig);
+        }
 
         if (sig.IsDoubleSig || sig.IsSimpleSig != true)
         {
